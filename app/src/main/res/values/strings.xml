@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ARK Shelf</string>
+    <string name="url">Url</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="save">Save</string>
+    <string name="pick_folder">Pick folder</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_internet">No Internet connection</string>
+    <string name="unknown_host">Unknown host</string>
+    <string name="invalid_url">Invalid url</string>
+    <string name="internal_storage">Internal</string>
+    <plurals name="items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+</resources>
