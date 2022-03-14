@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -146,7 +145,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private fun isWritePermGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            !Environment.isExternalStorageManager()
+            Environment.isExternalStorageManager()
         } else {
             ContextCompat.checkSelfPermission(
                 this,
