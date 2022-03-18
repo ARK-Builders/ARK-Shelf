@@ -12,23 +12,23 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 import kotlin.io.path.outputStream
 import kotlin.io.path.writeText
+import kotlin.io.path.createTempFile
 
-class LinkLocalDataSource(private val context: Context) {
+class LinkLocalDataSource() {
     private val klaxon = Klaxon()
-    private val jsonTmpPath =
-        Path(context.cacheDir.absolutePath).resolve(Path("link.json"))
 
     fun createLinkFile(link: Link, basePath: Path) {
-        generateJsonFile(link)
+        val jsonFile = generateJsonFile(link)
         val savePath = basePath.resolve(Path("${formatName(link)}.link"))
-        zipFiles(jsonTmpPath, link.imagePath, savePath)
+        zipFiles(jsonFile, link.imagePath, savePath)
     }
 
-    private fun generateJsonFile(link: Link) {
-        jsonTmpPath.deleteIfExists()
+    private fun generateJsonFile(link: Link): Path {
+        val file = createTempFile()
         val jsonLink = JsonLink(link.url, link.title, link.desc)
         val content = klaxon.toJsonString(jsonLink)
-        jsonTmpPath.writeText(content)
+        file.writeText(content)
+        return file
     }
 
     private fun formatName(link: Link): String {
@@ -37,6 +37,7 @@ class LinkLocalDataSource(private val context: Context) {
             .replace("https://", "")
             .replace("/", "-")
             .replace(".", "-")
+            .replace("?", "-")
     }
 
     private fun zipFiles(json: Path, image: Path?, output: Path) {

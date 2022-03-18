@@ -9,16 +9,13 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import space.taran.arkshelf.domain.Link
 import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.deleteIfExists
+import kotlin.io.path.createTempFile
 import kotlin.io.path.outputStream
 
 // https://ogp.me/
 class LinkRemoteDataSource(
     private val context: Context
 ) {
-    private val downloadImageTmpPath = Path(context.cacheDir.absolutePath)
-        .resolve(Path("link.png"))
     private val client = OkHttpClient()
 
     fun parse(url: String): Result<Link> {
@@ -71,7 +68,7 @@ class LinkRemoteDataSource(
     }
 
     private fun downloadImage(url: String): Path {
-        downloadImageTmpPath.deleteIfExists()
+        val file = createTempFile()
 
         val bitmap = Glide.with(context)
             .asBitmap()
@@ -79,11 +76,11 @@ class LinkRemoteDataSource(
             .submit()
             .get()
 
-        val out = downloadImageTmpPath.outputStream()
+        val out = file.outputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         out.close()
 
-        return downloadImageTmpPath
+        return file
     }
 
     companion object {
