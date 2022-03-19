@@ -17,11 +17,21 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    signingConfigs {
+        testRelease {
+            storeFile project.rootProject.file('./testRelease.jks')
+            storePassword "arkshelf"
+            keyAlias "key0"
+            keyPassword "arkshelf"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.testRelease
         }
     }
     compileOptions {
