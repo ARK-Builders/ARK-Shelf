@@ -19,16 +19,15 @@ class LinkRemoteDataSource(
     private val client = OkHttpClient()
 
     fun parse(url: String): Result<Link> {
-        return try {
+        try {
             val request: Request = Request.Builder()
                 .url(url)
                 .build()
-            val body = client.newCall(request).execute().use {
-                it.body!!.string()
+            client.newCall(request).execute().use {
+                return parseBody(it.body!!.string(), it.request.url.toString())
             }
-            parseBody(body, url)
         } catch (e: Exception) {
-            Result.failure(e)
+            return Result.failure(e)
         }
     }
 

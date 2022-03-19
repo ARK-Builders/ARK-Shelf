@@ -48,7 +48,7 @@ class LinkLocalDataSource() {
     }
 
     private fun zipFile(name: String, path: Path, output: ZipOutputStream) {
-        val entry = ZipEntry(path.name)
+        val entry = ZipEntry(name)
         path.inputStream().use {
             output.putNextEntry(entry)
             it.copyTo(output)
