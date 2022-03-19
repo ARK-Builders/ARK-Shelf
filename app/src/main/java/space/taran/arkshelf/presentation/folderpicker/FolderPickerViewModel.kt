@@ -34,7 +34,7 @@ class FolderPickerViewModel(private val preferences: UserPreferences) :
     }
 
     fun onPathPicked() {
-        preferences.setLastSavePath(stateFlow.value.currentPath)
+        preferences.setLinkFolder(stateFlow.value.currentPath)
     }
 
     fun onItemClick(path: Path) = viewModelScope.launch {
@@ -46,7 +46,7 @@ class FolderPickerViewModel(private val preferences: UserPreferences) :
 
     private fun initialState(): FolderPickerState {
         val devices = listDevices()
-        val currentPath = preferences.getLastSavePath() ?: devices[0]
+        val currentPath = preferences.getLinkFolder() ?: devices[0]
         val selectedDevice =
             devices.find { currentPath.startsWith(it) } ?: devices[0]
         val selectedDevicePos = devices.indexOf(selectedDevice)

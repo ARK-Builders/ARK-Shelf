@@ -11,15 +11,17 @@ import space.taran.arkshelf.data.network.NetworkStatusImpl
 import space.taran.arkshelf.domain.LinkRepo
 import space.taran.arkshelf.domain.UserPreferences
 import space.taran.arkshelf.presentation.folderpicker.FolderPickerViewModel
-import space.taran.arkshelf.presentation.main.MainViewModel
+import space.taran.arkshelf.presentation.searchedit.SearchEditViewModel
+import space.taran.arkshelf.presentation.settings.SettingsViewModel
 
 val KOIN_MODULES by lazy {
     listOf(linkModule, viewModelsModule)
 }
 
 private val viewModelsModule = module {
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { SearchEditViewModel(get(), get()) }
     viewModel { FolderPickerViewModel(get()) }
+    viewModel { SettingsViewModel(get()) }
 }
 
 private val linkModule = module {

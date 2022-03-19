@@ -10,6 +10,10 @@
     <string name="unknown_host">Unknown host</string>
     <string name="invalid_url">Invalid url</string>
     <string name="internal_storage">Internal</string>
+    <string name="settings">Settings</string>
+    <string name="link_folder">Link folder</string>
+    <string name="specify_link_folder">Please specify a link folder</string>
+    <string name="pick">Pick</string>
     <plurals name="items">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>

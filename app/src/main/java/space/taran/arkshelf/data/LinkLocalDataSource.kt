@@ -42,18 +42,23 @@ class LinkLocalDataSource() {
 
     private fun zipFiles(json: Path, image: Path?, output: Path) {
         val out = ZipOutputStream(output.outputStream())
-        zipFile(json, out)
-        image?.let { zipFile(it, out) }
+        zipFile(JSON_FILE, json, out)
+        image?.let { zipFile(IMAGE_FILE, it, out) }
         out.close()
     }
 
-    private fun zipFile(path: Path, output: ZipOutputStream) {
+    private fun zipFile(name: String, path: Path, output: ZipOutputStream) {
         val entry = ZipEntry(path.name)
         path.inputStream().use {
             output.putNextEntry(entry)
             it.copyTo(output)
             output.closeEntry()
         }
+    }
+
+    companion object {
+        private const val IMAGE_FILE = "link.png"
+        private const val JSON_FILE = "link.json"
     }
 }
 

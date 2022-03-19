@@ -9,11 +9,11 @@ import kotlin.io.path.Path
 class UserPreferencesImpl(private val context: Context) : UserPreferences {
     private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
-    override fun getLastSavePath() =
+    override fun getLinkFolder() =
         prefs.getString(SAVE_PATH_KEY, null)?.let { Path(it) }
 
 
-    override fun setLastSavePath(path: Path) = with(prefs.edit()) {
+    override fun setLinkFolder(path: Path) = with(prefs.edit()) {
         putString(SAVE_PATH_KEY, path.toString())
         apply()
     }
