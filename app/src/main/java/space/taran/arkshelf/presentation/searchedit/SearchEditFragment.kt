@@ -6,6 +6,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -31,6 +32,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+        initResultListener()
         checkWritePermissions()
         observeViewModel()
         handleShareIntent()
@@ -124,6 +126,14 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
         }
     }
 
+    private fun initResultListener() {
+        setFragmentResultListener(REQUEST_SHARE_URL_KEY) { _, bundle ->
+             bundle.getString(URL_KEY)?.let { url ->
+                 viewModel.handleShareIntent(url)
+             }
+        }
+    }
+
     private suspend fun loadImage(state: SearchEditState.Edit) =
         withContext(Dispatchers.IO) {
             if (state.link.imagePath == null)
@@ -149,8 +159,9 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
     }
 
     companion object {
+        const val REQUEST_SHARE_URL_KEY = "shareUrl"
         const val TAG = "searchEdit"
-        private const val URL_KEY = "url"
+        const val URL_KEY = "url"
 
         fun newInstance(url: String? = null) = SearchEditFragment().apply {
             url?.let {
