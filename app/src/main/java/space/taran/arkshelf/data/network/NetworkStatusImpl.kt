@@ -5,43 +5,24 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 
 class NetworkStatusImpl(private val context: Context) : NetworkStatus {
+    private val cm =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private var isOnline = false
+    override fun isOnline(): Boolean {
+        val network: Network = cm.activeNetwork ?: return false
+        val networkCapabilities: NetworkCapabilities =
+            cm.getNetworkCapabilities(network) ?: return false
 
-    init {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val request = getNetworkRequest()
-        connectivityManager.registerNetworkCallback(
-            request,
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    isOnline = true
-                }
-
-                override fun onLost(network: Network) {
-                    isOnline = false
-                }
-
-                override fun onUnavailable() {
-                    isOnline = false
-                }
-
-                override fun onLosing(network: Network, maxMsToLive: Int) {
-                    isOnline = false
-                }
-
-            })
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                    && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED)
+        } else {
+            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        }
     }
-
-    override fun isOnline() = isOnline
-
-    private fun getNetworkRequest() = NetworkRequest.Builder()
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-        .build()
 }
