@@ -13,11 +13,12 @@ sealed class SearchEditState {
     data class Search(val url: String, val inputError: Throwable? = null) :
         SearchEditState()
 
-    data class Edit(val link: Link) : SearchEditState()
+    data class Edit(val link: Link, val isExtraUrl: Boolean) : SearchEditState()
 }
 
 sealed class SearchEditAction {
     object AskLinkFolder: SearchEditAction()
+    object CloseApp: SearchEditAction()
 }
 
 class SearchEditViewModel(
@@ -28,10 +29,10 @@ class SearchEditViewModel(
         MutableStateFlow(SearchEditState.Search("", null))
     val actionsFlow: MutableSharedFlow<SearchEditAction> = MutableSharedFlow()
 
-    fun onUrlPicked(url: String) = viewModelScope.launch {
+    fun onUrlPicked(url: String, isExtraUrl: Boolean) = viewModelScope.launch {
         val result = linkRepo.parse(formatUrl(url))
         result.onSuccess { link ->
-            stateFlow.value = SearchEditState.Edit(link)
+            stateFlow.value = SearchEditState.Edit(link, isExtraUrl)
         }
         result.onFailure { exception ->
             stateFlow.value = SearchEditState.Search(url, exception)
@@ -43,16 +44,19 @@ class SearchEditViewModel(
             actionsFlow.emit(SearchEditAction.AskLinkFolder)
             return@launch
         }
-        val link = (stateFlow.value as SearchEditState.Edit).link
-        link.title = title
-        link.desc = desc
-        linkRepo.generateFile(link, preferences.getLinkFolder()!!)
-        stateFlow.value = SearchEditState.Search("")
+        val state = stateFlow.value as SearchEditState.Edit
+        state.link.title = title
+        state.link.desc = desc
+        linkRepo.generateFile(state.link, preferences.getLinkFolder()!!)
+        if (state.isExtraUrl)
+            actionsFlow.emit(SearchEditAction.CloseApp)
+        else
+            stateFlow.value = SearchEditState.Search("")
     }
 
     fun handleShareIntent(url: String) {
         stateFlow.value = SearchEditState.Search(url)
-        onUrlPicked(url)
+        onUrlPicked(url, isExtraUrl = true)
     }
 
     fun onBackClick(): Boolean {

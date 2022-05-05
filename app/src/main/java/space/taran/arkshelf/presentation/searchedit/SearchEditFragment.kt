@@ -44,7 +44,10 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     hideKeyboard()
                     inputUrl.clearFocus()
-                    viewModel.onUrlPicked(inputUrl.editText?.text.toString())
+                    viewModel.onUrlPicked(
+                        inputUrl.editText?.text.toString(),
+                        isExtraUrl = false
+                    )
                 }
                 true
             }
@@ -94,7 +97,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
         }
         lifecycleScope.launch {
             viewModel.actionsFlow.collect { action ->
-                when(action) {
+                when (action) {
                     is SearchEditAction.AskLinkFolder -> {
                         Toast.makeText(
                             requireContext(),
@@ -102,6 +105,9 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
                             Toast.LENGTH_SHORT
                         ).show()
                         (requireActivity() as MainActivity).navigateToSettings()
+                    }
+                    SearchEditAction.CloseApp -> {
+                        requireActivity().finish()
                     }
                 }
             }
@@ -128,9 +134,9 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
 
     private fun initResultListener() {
         setFragmentResultListener(REQUEST_SHARE_URL_KEY) { _, bundle ->
-             bundle.getString(URL_KEY)?.let { url ->
-                 viewModel.handleShareIntent(url)
-             }
+            bundle.getString(URL_KEY)?.let { url ->
+                viewModel.handleShareIntent(url)
+            }
         }
     }
 
