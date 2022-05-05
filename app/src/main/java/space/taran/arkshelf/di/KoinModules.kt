@@ -8,6 +8,7 @@ import space.taran.arkshelf.data.LinkRepoImpl
 import space.taran.arkshelf.data.UserPreferencesImpl
 import space.taran.arkshelf.data.network.NetworkStatus
 import space.taran.arkshelf.data.network.NetworkStatusImpl
+import space.taran.arkshelf.data.network.OkHttpClientBuilder
 import space.taran.arkshelf.domain.LinkRepo
 import space.taran.arkshelf.domain.UserPreferences
 import space.taran.arkshelf.presentation.folderpicker.FolderPickerViewModel
@@ -25,9 +26,10 @@ private val viewModelsModule = module {
 }
 
 private val linkModule = module {
-    single { LinkRemoteDataSource(get()) }
+    single { LinkRemoteDataSource(get(), get()) }
     single { LinkLocalDataSource() }
     single<NetworkStatus> { NetworkStatusImpl(get()) }
     single<UserPreferences> { UserPreferencesImpl(get()) }
     single<LinkRepo> { LinkRepoImpl(get(), get(), get()) }
+    single { OkHttpClientBuilder.build() }
 }
