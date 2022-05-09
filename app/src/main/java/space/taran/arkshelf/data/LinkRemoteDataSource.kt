@@ -14,9 +14,10 @@ import kotlin.io.path.outputStream
 
 // https://ogp.me/
 class LinkRemoteDataSource(
-    private val context: Context
+    private val context: Context,
+    private val client: OkHttpClient
 ) {
-    private val client = OkHttpClient()
+
 
     fun parse(url: String): Result<Link> {
         try {
