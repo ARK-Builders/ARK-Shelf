@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            val url = checkShareIntent()
+            val url = checkShareIntent(intent)
             supportFragmentManager
                 .beginTransaction()
                 .add(
@@ -27,9 +27,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun checkShareIntent(): String? {
-        if (intent.action == Intent.ACTION_SEND && intent.type == "text/plain") {
-            return intent.getStringExtra(Intent.EXTRA_TEXT)
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        checkShareIntent(intent)?.let { url ->
+            supportFragmentManager.setFragmentResult(
+                SearchEditFragment.REQUEST_SHARE_URL_KEY,
+                Bundle().apply {
+                    putString(SearchEditFragment.URL_KEY, url)
+                }
+            )
+        }
+    }
+
+    private fun checkShareIntent(shareIntent: Intent?): String? {
+        shareIntent ?: return null
+
+        if (shareIntent.action == Intent.ACTION_SEND && shareIntent.type == "text/plain") {
+            return shareIntent.getStringExtra(Intent.EXTRA_TEXT)
         }
         return null
     }
