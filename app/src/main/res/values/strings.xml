@@ -15,7 +15,6 @@
     <string name="link_folder">Link folder</string>
     <string name="specify_link_folder">Please specify a link folder</string>
     <string name="pick">Pick</string>
-    <string name="too_many_request">Too many follow-up requests</string>
     <plurals name="items">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>

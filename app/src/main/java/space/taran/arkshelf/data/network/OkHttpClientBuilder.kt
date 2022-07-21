@@ -6,7 +6,7 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 import okhttp3.OkHttpClient
-import space.taran.arkshelf.presentation.LogTags.OKHTTP_REQUEST
+import space.taran.arkshelf.presentation.LogTags.OKHTTP
 
 
 object OkHttpClientBuilder {
@@ -35,7 +35,7 @@ object OkHttpClientBuilder {
         builder.addNetworkInterceptor {chain->
             val request = chain.request()
             val response = chain.proceed(request)
-            Log.d(OKHTTP_REQUEST,"Response code: ${response.code}")
+            Log.i(OKHTTP,"Response code: ${response.code}")
             response
         }
         return builder.build()

@@ -122,14 +122,8 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
         is NoInternetException -> {
             binding.inputUrl.error = getString(R.string.no_internet)
         }
-        is ProtocolException -> {
-            binding.inputUrl.error =
-                if (exception.message?.contains("Too many follow-up requests",ignoreCase = true) == true)
-                    getString(R.string.too_many_request)
-                else exception.message
-        }
         else -> {
-            binding.inputUrl.error = getString(R.string.invalid_url)
+            binding.inputUrl.error = exception.message
         }
     }
 
