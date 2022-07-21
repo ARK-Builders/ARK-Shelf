@@ -1,10 +1,13 @@
 package space.taran.arkshelf.data.network
 
-import okhttp3.OkHttpClient
+import android.util.Log
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
+import okhttp3.OkHttpClient
+import space.taran.arkshelf.presentation.LogTags.OKHTTP
+
 
 object OkHttpClientBuilder {
     fun build(): OkHttpClient {
@@ -29,6 +32,12 @@ object OkHttpClientBuilder {
         val builder = OkHttpClient.Builder()
         builder.sslSocketFactory(sslContext.socketFactory, manager)
         builder.hostnameVerifier { _, _ -> true }
+        builder.addNetworkInterceptor {chain->
+            val request = chain.request()
+            val response = chain.proceed(request)
+            Log.i(OKHTTP,"Response code: ${response.code}")
+            response
+        }
         return builder.build()
     }
 }

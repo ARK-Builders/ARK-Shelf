@@ -11,6 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import java.net.ProtocolException
+import java.net.UnknownHostException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -23,7 +25,6 @@ import space.taran.arkshelf.presentation.askWritePermissions
 import space.taran.arkshelf.presentation.hideKeyboard
 import space.taran.arkshelf.presentation.isWritePermGranted
 import space.taran.arkshelf.presentation.main.MainActivity
-import java.net.UnknownHostException
 
 class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
     private val binding by viewBinding(FragmentSearchEditBinding::bind)
@@ -122,7 +123,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
             binding.inputUrl.error = getString(R.string.no_internet)
         }
         else -> {
-            binding.inputUrl.error = getString(R.string.invalid_url)
+            binding.inputUrl.error = exception.message
         }
     }
 
