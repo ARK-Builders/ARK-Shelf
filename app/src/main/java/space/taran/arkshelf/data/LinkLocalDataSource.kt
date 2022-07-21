@@ -1,25 +1,24 @@
 package space.taran.arkshelf.data
 
-import android.content.Context
 import com.beust.klaxon.Klaxon
 import space.taran.arkshelf.domain.Link
 import java.nio.file.Path
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
-import kotlin.io.path.deleteIfExists
 import kotlin.io.path.inputStream
-import kotlin.io.path.name
 import kotlin.io.path.outputStream
 import kotlin.io.path.writeText
 import kotlin.io.path.createTempFile
+import java.security.MessageDigest
+
 
 class LinkLocalDataSource() {
     private val klaxon = Klaxon()
 
     fun createLinkFile(link: Link, basePath: Path) {
         val jsonFile = generateJsonFile(link)
-        val savePath = basePath.resolve(Path("${formatName(link)}.link"))
+        val savePath = basePath.resolve(Path("${sha512(link.url)}.link"))
         zipFiles(jsonFile, link.imagePath, savePath)
     }
 
@@ -31,13 +30,10 @@ class LinkLocalDataSource() {
         return file
     }
 
-    private fun formatName(link: Link): String {
-        return link.url
-            .replace("http://", "")
-            .replace("https://", "")
-            .replace("/", "-")
-            .replace(".", "-")
-            .replace("?", "-")
+    private fun sha512(string: String): String {
+        return MessageDigest.getInstance("SHA-512")
+            .digest(string.toByteArray(Charsets.UTF_8))
+            .fold("") { str, it -> str + "%02x".format(it) }
     }
 
     private fun zipFiles(json: Path, image: Path?, output: Path) {
