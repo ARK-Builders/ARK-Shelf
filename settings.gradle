@@ -5,6 +5,10 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter() // Warning: this repository is going to shut down soon
         maven { url 'https://jitpack.io' }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ARK-Builders/arklib-android")
+        }
     }
 }
 rootProject.name = "ARK Shelf"
