@@ -7,7 +7,7 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/hhio618/arklib-android")
+            url = uri("https://maven.pkg.github.com/ARK-Builders/arklib-android")
         }
     }
 }
