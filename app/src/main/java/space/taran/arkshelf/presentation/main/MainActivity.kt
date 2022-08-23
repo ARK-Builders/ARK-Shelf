@@ -2,6 +2,7 @@ package space.taran.arkshelf.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import by.kirich1409.viewbindingdelegate.viewBinding
 import space.taran.arkshelf.R
@@ -25,6 +26,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 )
                 .commit()
         }
+    }
+
+    init {
+        Log.d("MainActivity", "initializing")
+        System.loadLibrary("arklib")
     }
 
     override fun onNewIntent(intent: Intent?) {
