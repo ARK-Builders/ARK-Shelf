@@ -5,6 +5,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
 import space.taran.arkshelf.domain.Link
 import space.taran.arkshelf.domain.LinkRepo
 import space.taran.arkshelf.domain.UserPreferences
@@ -14,58 +20,67 @@ sealed class SearchEditState {
         SearchEditState()
 
     data class Edit(val link: Link, val isExtraUrl: Boolean) : SearchEditState()
+
+    companion object {
+        fun initial() = Search("")
+    }
 }
 
-sealed class SearchEditAction {
-    object AskLinkFolder: SearchEditAction()
-    object CloseApp: SearchEditAction()
+sealed class SearchEditSideEffect {
+    object AskLinkFolder: SearchEditSideEffect()
+    object CloseApp: SearchEditSideEffect()
 }
 
 class SearchEditViewModel(
     private val linkRepo: LinkRepo,
     private val preferences: UserPreferences
-) : ViewModel() {
-    val stateFlow: MutableStateFlow<SearchEditState> =
-        MutableStateFlow(SearchEditState.Search("", null))
-    val actionsFlow: MutableSharedFlow<SearchEditAction> = MutableSharedFlow()
+) : ViewModel(), ContainerHost<SearchEditState, SearchEditSideEffect> {
 
-    fun onUrlPicked(url: String, isExtraUrl: Boolean) = viewModelScope.launch {
+    override val container: Container<SearchEditState, SearchEditSideEffect> =
+        container(SearchEditState.initial())
+
+    fun onUrlPicked(url: String, isExtraUrl: Boolean) = intent {
         val result = linkRepo.parse(formatUrl(url))
-        result.onSuccess { link ->
-            stateFlow.value = SearchEditState.Edit(link, isExtraUrl)
-        }
-        result.onFailure { exception ->
-            stateFlow.value = SearchEditState.Search(url, exception)
+        reduce {
+            result.fold(
+                onSuccess = { link -> SearchEditState.Edit(link, isExtraUrl) },
+                onFailure = { e -> SearchEditState.Search(url, e) }
+            )
         }
     }
 
-    fun onSaveBtnClick(title: String, desc: String) = viewModelScope.launch {
+    fun onSaveBtnClick(title: String, desc: String) = intent {
         if (preferences.getLinkFolder() == null) {
-            actionsFlow.emit(SearchEditAction.AskLinkFolder)
-            return@launch
+            postSideEffect(SearchEditSideEffect.AskLinkFolder)
+            return@intent
         }
-        val state = stateFlow.value as SearchEditState.Edit
+        val state = state as SearchEditState.Edit
         state.link.title = title
         state.link.desc = desc
         linkRepo.generateFile(state.link, preferences.getLinkFolder()!!)
         if (state.isExtraUrl)
-            actionsFlow.emit(SearchEditAction.CloseApp)
-        else
-            stateFlow.value = SearchEditState.Search("")
+            postSideEffect(SearchEditSideEffect.CloseApp)
+        else {
+            reduce {
+                SearchEditState.Search("")
+            }
+        }
     }
 
-    fun handleShareIntent(url: String) {
-        stateFlow.value = SearchEditState.Search(url)
+    fun handleShareIntent(url: String) = intent {
+        reduce { SearchEditState.Search(url) }
         onUrlPicked(url, isExtraUrl = true)
     }
 
-    fun onBackClick(): Boolean {
-        with(stateFlow.value) {
-            return if (this is SearchEditState.Edit) {
-                stateFlow.value = SearchEditState.Search(link.url)
-                true
-            } else
-                false
+    fun onBackClick() = intent {
+        when(state) {
+            is SearchEditState.Search -> {
+                postSideEffect(SearchEditSideEffect.CloseApp)
+            }
+            is SearchEditState.Edit -> {
+                val url = (state as SearchEditState.Edit).link.url
+                reduce { SearchEditState.Search(url) }
+            }
         }
     }
 

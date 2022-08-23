@@ -11,13 +11,12 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import java.net.ProtocolException
 import java.net.UnknownHostException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import org.orbitmvi.orbit.viewmodel.observe
 import space.taran.arkshelf.R
 import space.taran.arkshelf.databinding.FragmentSearchEditBinding
 import space.taran.arkshelf.domain.NoInternetException
@@ -35,7 +34,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
         initUI()
         initResultListener()
         checkWritePermissions()
-        observeViewModel()
+        viewModel.observe(this, ::render, ::handleSideEffect)
         handleShareIntent()
     }
 
@@ -68,49 +67,41 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
             (requireActivity() as MainActivity).navigateToSettings()
         }
         requireActivity().onBackPressedDispatcher.addCallback(this@SearchEditFragment) {
-            if (!viewModel.onBackClick()) {
-                remove()
-                requireActivity().onBackPressed()
+            viewModel.onBackClick()
+        }
+    }
+
+    private fun render(state: SearchEditState) = lifecycleScope.launch {
+        when (state) {
+            is SearchEditState.Search -> {
+                binding.inputUrl.editText!!.setText(state.url)
+                state.inputError?.let { handleException(it) }
+                    ?: let { binding.inputUrl.error = null }
+                binding.root.transitionToStart()
+            }
+            is SearchEditState.Edit -> {
+                binding.tvUrl.text = state.link.url
+                binding.inputTitle.editText!!.setText(state.link.title)
+                binding.inputDesc.editText!!.setText(state.link.desc)
+                binding.ivPreview.setImageDrawable(null)
+                loadImage(state)
+                binding.root.transitionToEnd()
             }
         }
     }
 
-    private fun observeViewModel() {
-        lifecycleScope.launch {
-            viewModel.stateFlow.collect { state ->
-                when (state) {
-                    is SearchEditState.Search -> {
-                        binding.inputUrl.editText!!.setText(state.url)
-                        state.inputError?.let { handleException(it) }
-                            ?: let { binding.inputUrl.error = null }
-                        binding.root.transitionToStart()
-                    }
-                    is SearchEditState.Edit -> {
-                        binding.tvUrl.text = state.link.url
-                        binding.inputTitle.editText!!.setText(state.link.title)
-                        binding.inputDesc.editText!!.setText(state.link.desc)
-                        binding.ivPreview.setImageDrawable(null)
-                        loadImage(state)
-                        binding.root.transitionToEnd()
-                    }
-                }
+    private fun handleSideEffect(effect: SearchEditSideEffect) {
+        when (effect) {
+            SearchEditSideEffect.AskLinkFolder -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.specify_link_folder),
+                    Toast.LENGTH_SHORT
+                ).show()
+                (requireActivity() as MainActivity).navigateToSettings()
             }
-        }
-        lifecycleScope.launch {
-            viewModel.actionsFlow.collect { action ->
-                when (action) {
-                    is SearchEditAction.AskLinkFolder -> {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.specify_link_folder),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        (requireActivity() as MainActivity).navigateToSettings()
-                    }
-                    SearchEditAction.CloseApp -> {
-                        requireActivity().finish()
-                    }
-                }
+            SearchEditSideEffect.CloseApp -> {
+                requireActivity().finish()
             }
         }
     }
