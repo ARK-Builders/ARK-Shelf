@@ -24,7 +24,7 @@ private val viewModelsModule = module {
 }
 
 private val linkModule = module {
-    single { LinkRemoteDataSource(get(), get()) }
+    single { LinkRemoteDataSource(get()) }
     single { LinkLocalDataSource() }
     single<NetworkStatus> { NetworkStatusImpl(get()) }
     single<UserPreferences> { UserPreferencesImpl(get()) }
