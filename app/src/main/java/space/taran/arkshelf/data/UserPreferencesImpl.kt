@@ -4,9 +4,12 @@ import android.content.Context
 import android.os.Environment
 import space.taran.arkshelf.domain.UserPreferences
 import java.nio.file.Path
+import javax.inject.Inject
 import kotlin.io.path.Path
 
-class UserPreferencesImpl(private val context: Context) : UserPreferences {
+class UserPreferencesImpl @Inject constructor(
+    private val context: Context
+) : UserPreferences {
     private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
     override fun getLinkFolder() =

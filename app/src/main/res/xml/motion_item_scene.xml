@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetStart="@+id/motion_item_collapsed"
+        motion:constraintSetEnd="@+id/motion_item_expanded"
+        motion:duration="800">
+
+        <KeyFrameSet>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="45"
+                motion:percentX="1"
+                motion:percentY="0"
+                motion:motionTarget="@+id/iv_thumbnail"/>
+            <KeyAttribute
+                motion:motionTarget="@+id/iv_thumbnail"
+                motion:framePosition="45"
+                android:alpha="0"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="50"
+                motion:percentX="0"
+                motion:percentY="0"
+                motion:motionTarget="@+id/iv_preview"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="40"
+                motion:percentX="1"
+                motion:percentY="0"
+                motion:motionTarget="@+id/tv_title"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="40"
+                motion:percentX="1"
+                motion:percentY="0"
+                motion:motionTarget="@+id/tv_url"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="40"
+                motion:percentX="1"
+                motion:percentY="0"
+                motion:motionTarget="@+id/tv_desc"/>
+            <KeyAttribute
+                motion:motionTarget="@+id/tv_desc"
+                motion:framePosition="80"
+                android:alpha="0"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="80"
+                motion:percentY="0.5"
+                motion:motionTarget="@+id/btn_copy"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="80"
+                motion:percentY="0.5"
+                motion:motionTarget="@+id/btn_open"/>
+            <KeyPosition
+                motion:keyPositionType="deltaRelative"
+                motion:framePosition="80"
+                motion:percentY="0.5"
+                motion:motionTarget="@+id/btn_share"/>
+        </KeyFrameSet>
+
+    </Transition>
+
+    <ConstraintSet android:id="@+id/motion_item_collapsed">
+
+        <Constraint
+            android:id="@+id/iv_thumbnail"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            motion:layout_constraintStart_toStartOf="parent" />
+
+        <Constraint
+            android:id="@+id/tv_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            motion:layout_constraintStart_toEndOf="@id/iv_thumbnail"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintBottom_toTopOf="parent"/>
+
+        <Constraint
+            android:id="@+id/layout_hide_desc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintBottom_toBottomOf="@id/tv_url"
+            motion:layout_constraintStart_toEndOf="@id/iv_thumbnail"
+            motion:layout_constraintEnd_toEndOf="parent"/>
+
+        <Constraint
+            android:id="@+id/iv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            motion:layout_constraintBottom_toTopOf="parent"/>
+
+        <Constraint
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toEndOf="@id/iv_thumbnail"
+            motion:layout_constraintTop_toTopOf="parent" />
+
+        <Constraint
+            android:id="@+id/tv_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toEndOf="@id/iv_thumbnail"
+            motion:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+        <Constraint
+            android:id="@+id/btn_open"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="10dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toStartOf="@id/btn_share" />
+
+        <Constraint
+            android:id="@+id/btn_share"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="10dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toStartOf="@id/btn_copy" />
+
+        <Constraint
+            android:id="@+id/btn_copy"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="10dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent" />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/motion_item_expanded">
+
+        <Constraint
+            android:id="@+id/iv_thumbnail"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:visibility="invisible"
+            motion:layout_constraintEnd_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+
+        <Constraint
+            android:id="@+id/tv_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            motion:layout_constraintTop_toBottomOf="@id/tv_url"
+            motion:layout_constraintBottom_toTopOf="@id/btn_share"/>
+
+        <Constraint
+            android:id="@+id/layout_hide_desc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintBottom_toBottomOf="@id/tv_url"
+            motion:layout_constraintStart_toEndOf="@id/iv_thumbnail"
+            motion:layout_constraintEnd_toEndOf="parent"/>
+
+        <Constraint
+            android:id="@+id/iv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            motion:layout_constraintTop_toTopOf="parent"/>
+
+        <Constraint
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/iv_preview" />
+
+        <Constraint
+            android:id="@+id/tv_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+        <Constraint
+            android:id="@+id/btn_open"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="14dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toStartOf="@id/btn_share" />
+
+        <Constraint
+            android:id="@+id/btn_share"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="14dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toStartOf="@id/btn_copy" />
+
+        <Constraint
+            android:id="@+id/btn_copy"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="14dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent" />
+
+    </ConstraintSet>
+
+
+</MotionScene>

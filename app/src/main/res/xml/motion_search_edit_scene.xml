@@ -2,10 +2,13 @@
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto">
 
+    <!--region Transition SearchEdit-->
+
     <Transition
-        motion:constraintSetStart="@+id/start"
-        motion:constraintSetEnd="@+id/end"
-        motion:duration="600">
+        motion:constraintSetStart="@+id/motion_search"
+        motion:constraintSetEnd="@+id/motion_edit"
+        motion:duration="600"
+        motion:motionInterpolator="linear">
 
         <KeyFrameSet>
             <KeyAttribute
@@ -27,13 +30,31 @@
                 motion:framePosition="40"
                 android:alpha="0.1"/>
             <KeyAttribute
-                motion:motionTarget="@+id/iv_preview"
+                motion:motionTarget="@+id/iv_preview_edit"
                 motion:framePosition="20"
                 android:alpha="0.1"/>
         </KeyFrameSet>
     </Transition>
 
-    <ConstraintSet android:id="@+id/start">
+    <!--endregion-->
+
+    <!--region Transition SearchLatest-->
+
+    <Transition
+        motion:constraintSetStart="@+id/motion_search"
+        motion:constraintSetEnd="@+id/motion_latest">
+
+        <OnSwipe
+            motion:touchRegionId="@id/rv_latest"
+            motion:touchAnchorId="@id/rv_latest"
+            motion:maxAcceleration="10" />
+    </Transition>
+
+    <!--endregion-->
+
+    <!--region Search-->
+
+    <ConstraintSet android:id="@+id/motion_search">
         <Constraint
             android:id="@+id/scroll_url"
             android:visibility="invisible"
@@ -49,6 +70,11 @@
             />
 
         <Constraint
+            android:id="@+id/layout_folder_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/input_url"/>
+        <Constraint
             android:id="@+id/input_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,9 +83,7 @@
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintTop_toTopOf="parent"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintVertical_bias="0.5">
-        </Constraint>
+            motion:layout_constraintEnd_toEndOf="parent"/>
         <Constraint
             android:id="@+id/btn_generate"
             android:layout_width="wrap_content"
@@ -116,7 +140,7 @@
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintVertical_bias="0.5" />
         <Constraint
-            android:id="@+id/iv_preview"
+            android:id="@+id/iv_preview_edit"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:visibility="invisible"
@@ -126,10 +150,124 @@
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintVertical_bias="0.5">
         </Constraint>
+        <Constraint
+            android:id="@+id/rv_latest"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintTop_toBottomOf="@id/layout_folder_description"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            />
 
     </ConstraintSet>
 
-    <ConstraintSet android:id="@+id/end">
+    <!--endregion-->
+
+    <!--region Latest-->
+
+    <ConstraintSet android:id="@+id/motion_latest">
+        <Constraint
+            android:id="@+id/scroll_url"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintVertical_bias="0.5"
+            />
+
+        <Constraint
+            android:id="@+id/layout_folder_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toTopOf="parent"/>
+
+        <Constraint
+            android:id="@+id/input_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toTopOf="@id/layout_folder_description"/>
+        <Constraint
+            android:id="@+id/btn_generate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintVertical_bias="1"
+            android:layout_marginBottom="-200dp"/>
+        <Constraint
+            android:id="@+id/btn_generate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toEndOf="@id/btn_settings"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintVertical_bias="1"
+            android:layout_marginBottom="-200dp"/>
+        <Constraint
+            android:id="@+id/btn_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toStartOf="@id/btn_generate"
+            motion:layout_constraintVertical_bias="1"
+            android:layout_marginBottom="-200dp"/>
+        <Constraint
+            android:id="@+id/input_title"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="invisible"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintVertical_bias="0.5"
+            />
+        <Constraint
+            android:id="@+id/input_desc"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="invisible"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintVertical_bias="0.5" />
+        <Constraint
+            android:id="@+id/iv_preview_edit"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:visibility="invisible"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintVertical_bias="0.5">
+        </Constraint>
+        <Constraint
+            android:id="@+id/rv_latest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </ConstraintSet>
+
+    <!--endregion-->
+
+    <!--region Edit-->
+
+    <ConstraintSet android:id="@+id/motion_edit">
         <Constraint
             android:id="@id/scroll_url"
             android:layout_width="match_parent"
@@ -141,6 +279,11 @@
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintVertical_bias="0"
             android:visibility="visible" />
+        <Constraint
+            android:id="@+id/layout_folder_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="parent"/>
         <Constraint
             android:id="@+id/input_url"
             android:layout_width="match_parent"
@@ -201,7 +344,7 @@
             motion:layout_constraintTop_toBottomOf="@id/input_title"
             android:visibility="visible"/>
         <Constraint
-            android:id="@+id/iv_preview"
+            android:id="@+id/iv_preview_edit"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
@@ -213,6 +356,14 @@
             motion:layout_constraintTop_toBottomOf="@id/input_desc"
             motion:layout_constraintEnd_toEndOf="parent"
             android:visibility="visible"/>
+        <Constraint
+            android:id="@+id/rv_latest"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintTop_toBottomOf="@id/layout_folder_description"
+            />
     </ConstraintSet>
+
+    <!--endregion-->
 
 </MotionScene>

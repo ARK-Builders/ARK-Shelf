@@ -9,16 +9,15 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import space.taran.arkshelf.domain.Link
 import java.nio.file.Path
+import javax.inject.Inject
 import kotlin.io.path.createTempFile
 import kotlin.io.path.outputStream
 
 // https://ogp.me/
-class LinkRemoteDataSource(
+class LinkRemoteDataSource @Inject constructor(
     private val context: Context,
     private val client: OkHttpClient
 ) {
-
-
     fun parse(url: String): Result<Link> {
         try {
             val request: Request = Request.Builder()

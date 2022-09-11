@@ -1,23 +1,35 @@
 package space.taran.arkshelf.presentation.settings
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import space.taran.arkshelf.R
-import space.taran.arkshelf.databinding.FragmentSettingsBinding
 import space.taran.arkfilepicker.ArkFilePickerConfig
 import space.taran.arkfilepicker.ArkFilePickerFragment
 import space.taran.arkfilepicker.ArkFilePickerMode
 import space.taran.arkfilepicker.onArkPathPicked
+import space.taran.arkshelf.R
+import space.taran.arkshelf.databinding.FragmentSettingsBinding
+import space.taran.arkshelf.di.DIManager
+import javax.inject.Inject
 
 class SettingsFragment: Fragment(R.layout.fragment_settings) {
     private val binding by viewBinding(FragmentSettingsBinding::bind)
-    private val viewModel: SettingsViewModel by inject()
+
+    @Inject
+    lateinit var factory: SettingsViewModelFactory
+    private val viewModel: SettingsViewModel by viewModels {
+        factory
+    }
+
+    override fun onAttach(context: Context) {
+        DIManager.component.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
