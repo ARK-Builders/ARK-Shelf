@@ -6,8 +6,11 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import javax.inject.Inject
 
-class NetworkStatusImpl(private val context: Context) : NetworkStatus {
+class NetworkStatusImpl @Inject constructor(
+    private val context: Context
+) : NetworkStatus {
     private val cm =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 

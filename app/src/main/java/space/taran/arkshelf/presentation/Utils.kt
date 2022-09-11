@@ -12,12 +12,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import space.taran.arkshelf.BuildConfig
 import space.taran.arkshelf.R
 import space.taran.arkshelf.presentation.main.MainActivity
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.DecimalFormat
+import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.Path
 import kotlin.io.path.isHidden
 import kotlin.io.path.listDirectoryEntries
@@ -44,18 +51,6 @@ fun listDevices(): List<Path> =
         }
 
 fun Path.listChildren(): List<Path> = listDirectoryEntries().filter { !it.isHidden() }
-
-fun iconForExtension(ext: String): Int {
-    val drawableID = App.instance.resources
-        .getIdentifier(
-            "ic_file_$ext",
-            "drawable",
-            App.instance.packageName
-        )
-
-    return if (drawableID > 0) drawableID
-    else R.drawable.ic_file
-}
 
 fun Fragment.hideKeyboard() {
     val activity = requireActivity()
@@ -100,12 +95,21 @@ fun isWritePermGranted(): Boolean {
     }
 }
 
-fun Long.formatSize(): String {
-    if (this <= 0) {
-        return "0 B"
+suspend fun <T> withContextAndLock(
+    context: CoroutineContext,
+    mutex: Mutex,
+    block: suspend CoroutineScope.() -> T
+): T = withContext(context) {
+    mutex.withLock {
+        block()
     }
+}
 
-    val units = arrayOf("B", "kB", "MB", "GB", "TB")
-    val digitGroups = (Math.log10(toDouble()) / Math.log10(1024.0)).toInt()
-    return "${DecimalFormat("#,##0.#").format(this / Math.pow(1024.0, digitGroups.toDouble()))} ${units[digitGroups]}"
+fun CoroutineScope.launchWithMutex(
+    mutex: Mutex,
+    block: suspend CoroutineScope.() -> Unit
+): Job = launch {
+    mutex.withLock {
+        block()
+    }
 }

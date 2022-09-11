@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutDescription="@xml/motion_scene"
+    app:layoutDescription="@xml/motion_search_edit_scene"
     tools:context=".presentation.searchedit.SearchEditFragment">
 
     <HorizontalScrollView
@@ -68,6 +68,40 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_folder_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_latest_links"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:text="Latest links in"/>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_folder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:strokeColor="@color/white"
+            android:maxLines="1"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:gravity="start"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            />
+
+    </LinearLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_generate"
         android:layout_width="wrap_content"
@@ -84,8 +118,16 @@
         android:text="@string/settings"/>
 
     <ImageView
-        android:id="@+id/iv_preview"
+        android:id="@+id/iv_preview_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_latest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:saveEnabled="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
