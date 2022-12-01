@@ -16,16 +16,21 @@ class LinkRemoteDataSource(
 
     fun parse(url: String): Result<Link> {
         return try {
-            val linkData = fetchLinkData(url) ?: return Result.failure( Exception("Link data not available"))
+            val linkData = fetchLinkData(url)
+                ?: return Result.failure(Exception("Link data not available"))
             val imagePath = try {
-                linkData.imageUrl?.let {
-                    println("Yeah")
-                    downloadImage(it)
-                }
+                downloadImage(linkData.imageUrl)
             } catch (e: Exception) {
                 null
             }
-            Result.success(Link(linkData.title, linkData.desc, imagePath, linkData.url))
+            Result.success(
+                Link(
+                    linkData.title,
+                    linkData.desc,
+                    imagePath,
+                    linkData.url
+                )
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }

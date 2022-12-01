@@ -5,8 +5,7 @@ import java.nio.file.Path
 import kotlin.io.path.*
 import space.taran.arklib.createLinkFile as createLinkFileN
 
-
-class LinkLocalDataSource() {
+class LinkLocalDataSource {
     fun createLinkFile(link: Link, basePath: Path) {
         createLinkFileN(link.title, link.desc, link.url, basePath.pathString, true)
     }
