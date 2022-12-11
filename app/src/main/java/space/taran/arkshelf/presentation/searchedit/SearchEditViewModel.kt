@@ -1,36 +1,32 @@
 package space.taran.arkshelf.presentation.searchedit
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import space.taran.arkshelf.data.LinkPagingDataSource
 import space.taran.arkshelf.domain.Link
 import space.taran.arkshelf.domain.LinkRepo
 import space.taran.arkshelf.domain.UserPreferences
 import java.nio.file.Path
-import kotlin.system.measureTimeMillis
+import javax.inject.Named
 
 data class SearchEditState(
     val url: String,
     val inputError: Throwable?,
     val screen: SearchEditScreen,
-    val latestLinks: List<LinkItemModel>?,
     val link: Link?,
     val isExternalUrl: Boolean,
     val linkFolder: Path?
@@ -52,7 +48,6 @@ data class SearchEditState(
                 url = externalUrl ?: "",
                 inputError = null,
                 screen = SearchEditScreen.SEARCH,
-                latestLinks = null,
                 link = null,
                 isExternalUrl = externalUrl != null,
                 linkFolder = preferences.getLinkFolder()
@@ -78,25 +73,19 @@ sealed class SearchEditSideEffect {
 class SearchEditViewModel(
     private val externalUrl: String?,
     private val linkRepo: LinkRepo,
-    private val preferences: UserPreferences
+    private val preferences: UserPreferences,
+    private val pageSize: Int
 ) : ViewModel(), ContainerHost<SearchEditState, SearchEditSideEffect> {
 
     override val container: Container<SearchEditState, SearchEditSideEffect> =
         container(SearchEditState.initial(externalUrl, preferences))
 
+    val listData = Pager(PagingConfig(pageSize = pageSize)) {
+        LinkPagingDataSource(linkRepo)
+    }.flow.cachedIn(viewModelScope)
+
     init {
         externalUrl?.let { onUrlPicked(externalUrl) }
-
-        viewModelScope.launch {
-            val links = linkRepo.loadMore()
-            intent {
-                reduce {
-                    state.copy(
-                        latestLinks = links.toLinkModels(state)
-                    )
-                }
-            }
-        }
     }
 
     fun onInputChanged(url: String) = intent {
@@ -148,17 +137,6 @@ class SearchEditViewModel(
         onUrlPicked(url)
     }
 
-    suspend fun onLoadMore() = withContext(Dispatchers.IO) {
-        val links = linkRepo.loadMore()
-        intent {
-            reduce {
-                state.copy(
-                    latestLinks = links.toLinkModels(state)
-                )
-            }
-        }
-    }
-
     fun onLinkFolderChanged(folder: Path) = viewModelScope.launch {
         preferences.setLinkFolder(folder)
         intent {
@@ -166,12 +144,6 @@ class SearchEditViewModel(
                 state.copy(linkFolder = folder)
             }
             postSideEffect(SearchEditSideEffect.LinkFolderChanged)
-        }
-        val links = linkRepo.loadMore()
-        intent {
-            reduce {
-                state.copy(latestLinks = links.toLinkModels(state))
-            }
         }
     }
 
@@ -199,10 +171,11 @@ class SearchEditViewModel(
 class SearchEditViewModelFactory @AssistedInject constructor(
     @Assisted private val externalUrl: String?,
     private val linkRepo: LinkRepo,
-    private val preferences: UserPreferences
+    private val preferences: UserPreferences,
+    @Named("PAGE_SIZE") private val pageSize: Int
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SearchEditViewModel(externalUrl, linkRepo, preferences) as T
+        return SearchEditViewModel(externalUrl, linkRepo, preferences, pageSize) as T
     }
 
     @AssistedFactory
@@ -210,26 +183,5 @@ class SearchEditViewModelFactory @AssistedInject constructor(
         fun create(
             @Assisted externalUrl: String?
         ): SearchEditViewModelFactory
-    }
-}
-
-private fun List<Link>.toLinkModels(state: SearchEditState): List<LinkItemModel> {
-    if (state.latestLinks == null) return map {
-        LinkItemModel(
-            it,
-            false
-        )
-    }
-
-
-    return map { link ->
-        val isExpanded = state
-            .latestLinks
-            .find { it.link == link }
-            ?.isExpanded ?: false
-        LinkItemModel(
-            link,
-            isExpanded
-        )
     }
 }

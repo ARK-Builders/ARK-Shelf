@@ -4,7 +4,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 
 class RelaxedTransitionListener(
     val onTransitionStarted: (() -> Unit)? = null,
-    val onTransitionChange: (() -> Unit)? = null,
+    val onTransitionChange: ((Float) -> Unit)? = null,
     val onTransitionCompleted: ((Int) -> Unit)? = null,
     val onTransitionTrigger: (() -> Unit)? = null
 ): MotionLayout.TransitionListener {
@@ -22,7 +22,7 @@ class RelaxedTransitionListener(
         endId: Int,
         progress: Float
     ) {
-        onTransitionChange?.invoke()
+        onTransitionChange?.invoke(progress)
     }
 
     override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {

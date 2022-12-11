@@ -6,5 +6,6 @@ import java.nio.file.Path
 interface LinkRepo {
     suspend fun parse(url: String): Result<Link>
     suspend fun generateFile(link: Link, basePath: Path)
-    suspend fun loadMore(): List<Link>
+    // <Links, canLoadMore>
+    suspend fun loadFiles(page: Int): Pair<List<Link>, Boolean>
 }

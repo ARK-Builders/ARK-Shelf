@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import space.taran.arkshelf.domain.Link
 import space.taran.arkshelf.domain.UserPreferences
 import space.taran.arkshelf.presentation.listChildren
@@ -23,21 +24,21 @@ import kotlin.io.path.createTempFile
 import java.security.MessageDigest
 import java.util.zip.ZipFile
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.io.path.createDirectories
 import kotlin.io.path.extension
 import kotlin.io.path.getLastModifiedTime
 import kotlin.io.path.isDirectory
-
-private class LinkWithPath(val link: Link, val path: Path)
+import kotlin.io.path.notExists
 
 class LinkLocalDataSource @Inject constructor(
     private val preferences: UserPreferences,
-    private val appCtx: Context
+    private val appCtx: Context,
+    @Named("PAGE_SIZE") private val pageSize: Int,
 ) {
     private val klaxon = Klaxon()
-    private val latestByFolder = mutableMapOf<Path, MutableList<LinkWithPath>>()
-    private val loadMoreMutex = Mutex()
-    private val cacheDir = appCtx.cacheDir.resolve(CACHE_IMAGES_DIR).toPath().createDirectories()
+    private val cacheDir =
+        appCtx.cacheDir.resolve(CACHE_IMAGES_DIR).toPath().createDirectories()
 
     fun createLinkFile(link: Link, basePath: Path) {
         val jsonFile = generateJsonFile(link)
@@ -45,42 +46,36 @@ class LinkLocalDataSource @Inject constructor(
         zipFiles(jsonFile, link.imagePath, savePath)
     }
 
-    suspend fun loadMore(): List<Link> = withContextAndLock(
-        Dispatchers.Default,
-        loadMoreMutex
-    ) {
-        val linkFolder = preferences.getLinkFolder()
-            ?: return@withContextAndLock emptyList()
+    suspend fun loadFiles(page: Int): Pair<List<Link>, Boolean> = withContext(Dispatchers.Default) {
+            val linkFolder = preferences.getLinkFolder()
+                ?: return@withContext Pair(emptyList(), false)
 
+            val dropCount = (page - 1) * pageSize
+            val canLoadMore: Boolean
 
-        val newLinksJobs = linkFolder
-            .listChildren()
-            .filter {
-                it.extension == "link" && !it.isDirectory()
-            }
-            .sortedByDescending { it.getLastModifiedTime() }
-            .minus(latestByFolder[linkFolder]?.map { it.path } ?: emptyList())
-            .take(BATCH_SIZE)
-            .map { path ->
-                async {
-                    val link = parseLinkFile(path) ?: return@async null
-                    LinkWithPath(link, path)
+            val newLinksJobs = linkFolder
+                .listChildren()
+                .filter {
+                    it.extension == "link" && !it.isDirectory()
                 }
-            }
-            .toList()
+                .sortedByDescending { it.getLastModifiedTime() }
+                .also { files ->
+                    canLoadMore = files.size > dropCount + pageSize
+                }
+                .drop(dropCount)
+                .take(pageSize)
+                .map { path ->
+                    async {
+                        parseLinkFile(path) ?: return@async null
+                    }
+                }
+                .toList()
 
-        val newLinks = newLinksJobs.awaitAll().filterNotNull()
-
-        latestByFolder[linkFolder]?.let {
-            it.addAll(newLinks)
-        } ?: let {
-            latestByFolder[linkFolder] = newLinks.toMutableList()
+            return@withContext Pair(
+                newLinksJobs.awaitAll().filterNotNull(),
+                canLoadMore
+            )
         }
-
-        return@withContextAndLock latestByFolder[linkFolder]
-            ?.map { it.link }
-            ?: emptyList()
-    }
 
     private fun generateJsonFile(link: Link): Path {
         val file = createTempFile()
@@ -122,11 +117,14 @@ class LinkLocalDataSource @Inject constructor(
         val jsonLink = klaxon.parse<JsonLink>(zip.getInputStream(jsonEntry))!!
 
         val imageCacheName = Path(sha512(jsonLink.url))
-        val imagePath = cacheDir.resolve(imageCacheName)
+        var imagePath = cacheDir.resolve(imageCacheName)
 
         if (!cacheDir.contains(imageCacheName)) {
             restoreImageFile(zip, entries, imagePath)
         }
+
+        if (imagePath.notExists())
+            imagePath = null
 
         Link(jsonLink.title, jsonLink.desc, imagePath, jsonLink.url)
     } catch (e: Exception) {
@@ -148,7 +146,6 @@ class LinkLocalDataSource @Inject constructor(
     }
 
     companion object {
-        private const val BATCH_SIZE = 14
         private const val CACHE_IMAGES_DIR = "images"
         private const val IMAGE_FILE = "link.png"
         private const val JSON_FILE = "link.json"

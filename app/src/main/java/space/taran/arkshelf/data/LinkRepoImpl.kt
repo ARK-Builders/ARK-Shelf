@@ -30,5 +30,6 @@ class LinkRepoImpl @Inject constructor(
             local.createLinkFile(link, basePath)
         }
 
-    override suspend fun loadMore() = local.loadMore()
+    override suspend fun loadFiles(page: Int) = local.loadFiles(page)
+
 }
