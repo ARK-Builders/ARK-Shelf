@@ -14,6 +14,9 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@v1.0.5
+
     - name: Build Debug APK
       run: ./gradlew assembleDebug
 
@@ -23,13 +26,13 @@ jobs:
     - name: Upload Debug APK
       uses: actions/upload-artifact@v3
       with:
-        name: debug-apk
-        path: ./app/build/outputs/apk/debug/app-debug.apk
+        name: ark-shelf-debug
+        path: ./app/build/outputs/apk/debug/ark-shelf-debug.apk
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v3
       with:
-        name: release-apk
-        path: ./app/build/outputs/apk/release/app-release.apk
+        name: ark-shelf-release
+        path: ./app/build/outputs/apk/release/ark-shelf-release.apk
 
  
