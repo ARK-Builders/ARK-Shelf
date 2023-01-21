@@ -10,7 +10,6 @@ import javax.inject.Inject
 import kotlin.io.path.createTempFile
 import kotlin.io.path.outputStream
 
-// https://ogp.me/
 class LinkRemoteDataSource @Inject constructor(
     private val context: Context
 ) {
