@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import kotlinx.coroutines.CoroutineScope
+import space.taran.arkshelf.R
 import space.taran.arkshelf.databinding.ItemLinkBinding
 import space.taran.arkshelf.domain.Link
 
@@ -126,6 +128,7 @@ class LinkListAdapter(
                 context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("label", link.url)
             clipboard.setPrimaryClip(clip)
+            Toast.makeText(context, R.string.link_copied, Toast.LENGTH_SHORT).show()
         }
         btnShare.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)

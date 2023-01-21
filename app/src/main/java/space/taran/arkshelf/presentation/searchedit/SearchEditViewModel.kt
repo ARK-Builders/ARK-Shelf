@@ -9,6 +9,7 @@ import androidx.paging.cachedIn
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -117,10 +118,13 @@ class SearchEditViewModel(
         }
         state.link!!.title = title
         state.link!!.desc = desc
-        linkRepo.generateFile(state.link!!, preferences.getLinkFolder()!!)
-        if (state.isExternalUrl)
+        if (state.isExternalUrl) {
+            viewModelScope.launch(Dispatchers.IO) {
+                linkRepo.generateFile(state.link!!, preferences.getLinkFolder()!!)
+            }
             postSideEffect(SearchEditSideEffect.CloseApp)
-        else {
+        } else {
+            linkRepo.generateFile(state.link!!, preferences.getLinkFolder()!!)
             reduce {
                 state.copy(screen = SearchEditScreen.SEARCH, link = null)
             }
