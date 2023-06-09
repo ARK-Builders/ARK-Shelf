@@ -17,22 +17,23 @@ jobs:
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@v1.0.5
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
-
     - name: Build Release APK
       run: ./gradlew assembleRelease
 
-    - name: Upload Debug APK
+    - name: Upload Release arm64-v8a APK
       uses: actions/upload-artifact@v3
       with:
-        name: ark-shelf-debug
-        path: ./app/build/outputs/apk/debug/ark-shelf-debug.apk
+          name: ark-shelf-arm64-v8a-apk
+          path: ./app/build/outputs/apk/release/ark-shelf-arm64-v8a-release.apk
 
-    - name: Upload Release APK
+    - name: Upload Release armeabi-v7a APK
       uses: actions/upload-artifact@v3
       with:
-        name: ark-shelf-release
-        path: ./app/build/outputs/apk/release/ark-shelf-release.apk
+          name: ark-shelf-armeabi-v7a-apk
+          path: ./app/build/outputs/apk/release/ark-shelf-armeabi-v7a-release.apk
 
- 
+    - name: Upload Release universal APK
+      uses: actions/upload-artifact@v3
+      with:
+          name: ark-shelf-universal-apk
+          path: ./app/build/outputs/apk/release/ark-shelf-universal-release.apk

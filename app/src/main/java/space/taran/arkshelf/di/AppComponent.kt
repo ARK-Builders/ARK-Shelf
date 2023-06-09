@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import space.taran.arkshelf.di.module.NetworkModule
 import space.taran.arkshelf.di.module.RepoModule
 import space.taran.arkshelf.presentation.searchedit.SearchEditFragment
 import space.taran.arkshelf.presentation.settings.SettingsFragment
@@ -13,7 +12,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-        NetworkModule::class,
         RepoModule::class,
     ]
 )
@@ -25,7 +23,7 @@ interface AppComponent {
     interface Factory {
         fun create(
             @BindsInstance application: Application,
-            @BindsInstance context: Context
+            @BindsInstance context: Context,
         ): AppComponent
     }
 }

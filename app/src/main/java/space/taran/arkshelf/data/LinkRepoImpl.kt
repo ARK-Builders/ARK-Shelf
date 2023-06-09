@@ -1,8 +1,6 @@
 package space.taran.arkshelf.data
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import space.taran.arkshelf.data.network.NetworkStatus
 import space.taran.arkshelf.domain.Link
@@ -25,10 +23,10 @@ class LinkRepoImpl @Inject constructor(
                 return@withContext Result.failure(NoInternetException())
         }
 
-    override suspend fun generateFile(link: Link, basePath: Path) =
+    override suspend fun generateResource(resource: Link, basePath: Path) =
         withContext(Dispatchers.IO) {
-            local.createLinkFile(link, basePath)
+            local.createLinkResource(resource, basePath)
         }
 
-    override suspend fun loadMore() = local.loadMore()
+    override suspend fun getLinksFromFolder() = local.getLinksFromFolder()
 }
