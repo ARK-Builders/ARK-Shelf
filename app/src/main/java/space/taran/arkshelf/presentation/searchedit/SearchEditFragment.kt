@@ -1,15 +1,8 @@
 package space.taran.arkshelf.presentation.searchedit
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.CLIPBOARD_SERVICE
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -19,42 +12,30 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.mikepenz.fastadapter.scroll.EndlessRecyclerOnScrollListener
 import koleton.api.hideSkeleton
 import koleton.api.loadSkeleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.viewmodel.observe
 import space.taran.arkfilepicker.ArkFilePickerConfig
-import space.taran.arkfilepicker.ArkFilePickerFragment
-import space.taran.arkfilepicker.ArkFilePickerMode
-import space.taran.arkfilepicker.onArkPathPicked
+import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerFragment
+import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerMode
+import space.taran.arkfilepicker.presentation.onArkPathPicked
 import space.taran.arkshelf.R
 import space.taran.arkshelf.databinding.FragmentSearchEditBinding
-import space.taran.arkshelf.databinding.ItemLinkBinding
-import space.taran.arkshelf.databinding.ItemProgressBinding
 import space.taran.arkshelf.di.DIManager
 import space.taran.arkshelf.domain.NoInternetException
-import space.taran.arkshelf.presentation.RelaxedTransitionListener
 import space.taran.arkshelf.presentation.askWritePermissions
 import space.taran.arkshelf.presentation.hideKeyboard
 import space.taran.arkshelf.presentation.isWritePermGranted
-import space.taran.arkshelf.presentation.launchWithMutex
 import space.taran.arkshelf.presentation.main.MainActivity
 import java.net.UnknownHostException
 import javax.inject.Inject
-
 
 class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
     private val binding by viewBinding(FragmentSearchEditBinding::bind)
@@ -65,9 +46,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
         factory.create(arguments?.getString(URL_KEY))
     }
 
-    private val linksAdapter = ItemAdapter<LinkItem>()
-    private val footerProgressAdapter = ItemAdapter<ProgressItem>()
-    private val loadMoreMutex = Mutex()
+    lateinit var linkListAdapter: LinkListAdapter
 
     override fun onAttach(context: Context) {
         DIManager.component.inject(this)
@@ -84,11 +63,12 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
     }
 
     private fun initUI() = with(binding) {
-        val fastAdapter = FastAdapter.with(listOf(linksAdapter, footerProgressAdapter))
-        rvLatest.adapter = fastAdapter
+        linkListAdapter = LinkListAdapter(requireContext())
+        rvLatest.adapter = linkListAdapter
         rvLatest.loadSkeleton(R.layout.item_link_skeleton) {
             itemCount(16)
         }
+        rvLatest.itemAnimator = null
         root.setTransition(R.id.motion_search, R.id.motion_latest)
         inputUrl.editText!!.apply {
             doAfterTextChanged {
@@ -109,6 +89,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
             val config = ArkFilePickerConfig(
                 mode = ArkFilePickerMode.FOLDER,
                 titleStringId = R.string.pick_link_folder,
+                showRoots = true
             )
             ArkFilePickerFragment
                 .newInstance(config)
@@ -131,17 +112,6 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
         requireActivity().onBackPressedDispatcher.addCallback(this@SearchEditFragment) {
             viewModel.onBackClick()
         }
-        val loadMoreListener = object : EndlessRecyclerOnScrollListener() {
-            override fun onLoadMore(currentPage: Int) {
-                lifecycleScope.launchWithMutex(loadMoreMutex) {
-                    val progressItem = ProgressItem()
-                    footerProgressAdapter.add(progressItem)
-                    viewModel.onLoadMore()
-                    footerProgressAdapter.clear()
-                }
-            }
-        }
-        rvLatest.addOnScrollListener(loadMoreListener)
     }
 
     private fun render(state: SearchEditState) = lifecycleScope.launch {
@@ -152,6 +122,10 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
             binding.tvLatestLinks.isVisible = false
             binding.btnFolder.text = getString(R.string.pick_link_folder)
         }
+        state.links?.let {
+            linkListAdapter.setLinks(it)
+            binding.rvLatest.hideSkeleton()
+        }
 
         when (state.screen) {
             SearchEditScreen.SEARCH -> {
@@ -159,19 +133,11 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
                     binding.inputUrl.editText!!.setText(state.url)
                 state.inputError?.let { handleException(it) }
                     ?: let { binding.inputUrl.error = null }
-                state.latestLinks?.let {
-                    binding.rvLatest.hideSkeleton()
-                    FastAdapterDiffUtil[linksAdapter] =
-                        state.latestLinks.map { LinkItem(requireContext(), it) }
-                }
                 if (binding.root.currentState == R.id.motion_edit) {
                     binding.root.setTransition(R.id.motion_edit, R.id.motion_search)
                     binding.root.transitionToEnd {
-                        binding.root.setTransition(
-                            R.id.motion_search,
-                            R.id.motion_latest
-                        )
-                        binding.root.transitionToEnd {}
+                        binding.root.setTransition(R.id.motion_search, R.id.motion_latest)
+                        binding.root.transitionToEnd()
                     }
                 }
             }
@@ -200,7 +166,6 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
                 requireActivity().finish()
             }
             SearchEditSideEffect.LinkFolderChanged -> {
-                linksAdapter.setNewList(emptyList())
                 binding.rvLatest.loadSkeleton(R.layout.item_link_skeleton) {
                     itemCount(16)
                 }
@@ -227,7 +192,7 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
     }
 
     private fun initResultListener() {
-        parentFragmentManager.onArkPathPicked(lifecycleOwner = this) { path->
+        parentFragmentManager.onArkPathPicked(lifecycleOwner = this) { path ->
             viewModel.onLinkFolderChanged(path)
         }
         setFragmentResultListener(REQUEST_SHARE_URL_KEY) { _, bundle ->
@@ -274,109 +239,4 @@ class SearchEditFragment : Fragment(R.layout.fragment_search_edit) {
             }
         }
     }
-}
-
-private class LinkItem(
-    private val context: Context,
-    private val model: LinkItemModel
-) : AbstractBindingItem<ItemLinkBinding>() {
-    override var identifier: Long
-        get() = model.link.hashCode().toLong()
-        set(value) {}
-    override val type = 0
-
-    override fun createBinding(
-        inflater: LayoutInflater,
-        parent: ViewGroup?
-    ) = ItemLinkBinding.inflate(inflater, parent, false).apply {
-        motionItem.setTransitionListener(RelaxedTransitionListener(
-            onTransitionCompleted = {
-                motionItem.post {
-                    motionItem.requestLayout()
-                }
-            }
-        ))
-    }
-
-    override fun bindView(
-        binding: ItemLinkBinding,
-        payloads: List<Any>
-    ) = with(binding) {
-        reset(model.isExpanded, binding)
-
-        val link = model.link
-        tvTitle.text = link.title
-        tvUrl.text = link.url
-        tvDesc.text = link.desc
-
-        binding.motionItem.setOnClickListener {
-            if (motionItem.progress != 0f && motionItem.progress != 1f)
-                return@setOnClickListener
-
-            if (model.isExpanded)
-                motionItem.transitionToStart()
-            else
-                motionItem.transitionToEnd()
-            model.isExpanded = !model.isExpanded
-        }
-
-        btnOpen.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(link.url)
-            context.startActivity(
-                Intent.createChooser(intent, "View the link with:")
-            )
-        }
-        btnCopy.setOnClickListener {
-            val clipboard =
-                context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("label", link.url)
-            clipboard.setPrimaryClip(clip)
-        }
-        btnShare.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.putExtra(Intent.EXTRA_TEXT, link.url)
-            intent.type = "text/plain"
-
-            context.startActivity(
-                Intent.createChooser(intent, "Share the link with:")
-            )
-        }
-
-        Glide
-            .with(ivPreview)
-            .load(link.imagePath?.toFile())
-            .override(PREVIEW_SIZE)
-            .into(ivPreview)
-
-        Glide
-            .with(ivThumbnail)
-            .load(link.imagePath?.toFile())
-            .override(THUMBNAIL_SIZE)
-            .transform(CenterCrop(), RoundedCorners(8))
-            .into(ivThumbnail)
-
-        return@with
-    }
-
-    private fun reset(
-        isExpanded: Boolean,
-        binding: ItemLinkBinding
-    ) = with(binding) {
-        motionItem.progress = if (isExpanded) 1f else 0f
-        root.post { root.requestLayout() }
-    }
-
-    companion object {
-        private const val PREVIEW_SIZE = 600
-        private const val THUMBNAIL_SIZE = 200
-    }
-}
-
-private class ProgressItem: AbstractBindingItem<ItemProgressBinding>() {
-    override val type = 1
-    override fun createBinding(
-        inflater: LayoutInflater,
-        parent: ViewGroup?
-    ) = ItemProgressBinding.inflate(inflater, parent, false)
 }

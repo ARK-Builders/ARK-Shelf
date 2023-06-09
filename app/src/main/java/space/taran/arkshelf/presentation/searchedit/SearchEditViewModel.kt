@@ -1,6 +1,5 @@
 package space.taran.arkshelf.presentation.searchedit
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,12 +7,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -24,16 +18,15 @@ import space.taran.arkshelf.domain.Link
 import space.taran.arkshelf.domain.LinkRepo
 import space.taran.arkshelf.domain.UserPreferences
 import java.nio.file.Path
-import kotlin.system.measureTimeMillis
 
 data class SearchEditState(
     val url: String,
     val inputError: Throwable?,
     val screen: SearchEditScreen,
-    val latestLinks: List<LinkItemModel>?,
     val link: Link?,
     val isExternalUrl: Boolean,
-    val linkFolder: Path?
+    val linkFolder: Path?,
+    val links: List<Link>? = null
 ) {
     init {
         when (screen) {
@@ -52,7 +45,6 @@ data class SearchEditState(
                 url = externalUrl ?: "",
                 inputError = null,
                 screen = SearchEditScreen.SEARCH,
-                latestLinks = null,
                 link = null,
                 isExternalUrl = externalUrl != null,
                 linkFolder = preferences.getLinkFolder()
@@ -86,16 +78,9 @@ class SearchEditViewModel(
 
     init {
         externalUrl?.let { onUrlPicked(externalUrl) }
-
-        viewModelScope.launch {
-            val links = linkRepo.loadMore()
-            intent {
-                reduce {
-                    state.copy(
-                        latestLinks = links.toLinkModels(state)
-                    )
-                }
-            }
+        intent {
+            val links = linkRepo.getLinksFromFolder()
+            reduce { state.copy(links = links) }
         }
     }
 
@@ -128,12 +113,20 @@ class SearchEditViewModel(
         }
         state.link!!.title = title
         state.link!!.desc = desc
-        linkRepo.generateFile(state.link!!, preferences.getLinkFolder()!!)
-        if (state.isExternalUrl)
+        if (state.isExternalUrl) {
+            viewModelScope.launch(Dispatchers.IO) {
+                linkRepo.generateResource(state.link!!, preferences.getLinkFolder()!!)
+            }
             postSideEffect(SearchEditSideEffect.CloseApp)
-        else {
+        } else {
+            linkRepo.generateResource(state.link!!, preferences.getLinkFolder()!!)
+            val links = state.links?.let { oldLinks ->
+                val mutLinks = oldLinks.toMutableList()
+                mutLinks.add(0, state.link!!)
+                mutLinks
+            }
             reduce {
-                state.copy(screen = SearchEditScreen.SEARCH, link = null)
+                state.copy(screen = SearchEditScreen.SEARCH, link = null, links = links)
             }
         }
     }
@@ -148,29 +141,13 @@ class SearchEditViewModel(
         onUrlPicked(url)
     }
 
-    suspend fun onLoadMore() = withContext(Dispatchers.IO) {
-        val links = linkRepo.loadMore()
-        intent {
-            reduce {
-                state.copy(
-                    latestLinks = links.toLinkModels(state)
-                )
-            }
-        }
-    }
-
     fun onLinkFolderChanged(folder: Path) = viewModelScope.launch {
         preferences.setLinkFolder(folder)
         intent {
-            reduce {
-                state.copy(linkFolder = folder)
-            }
             postSideEffect(SearchEditSideEffect.LinkFolderChanged)
-        }
-        val links = linkRepo.loadMore()
-        intent {
+            val links = linkRepo.getLinksFromFolder()
             reduce {
-                state.copy(latestLinks = links.toLinkModels(state))
+                state.copy(linkFolder = folder, links = links)
             }
         }
     }
@@ -199,7 +176,7 @@ class SearchEditViewModel(
 class SearchEditViewModelFactory @AssistedInject constructor(
     @Assisted private val externalUrl: String?,
     private val linkRepo: LinkRepo,
-    private val preferences: UserPreferences
+    private val preferences: UserPreferences,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SearchEditViewModel(externalUrl, linkRepo, preferences) as T
@@ -210,26 +187,5 @@ class SearchEditViewModelFactory @AssistedInject constructor(
         fun create(
             @Assisted externalUrl: String?
         ): SearchEditViewModelFactory
-    }
-}
-
-private fun List<Link>.toLinkModels(state: SearchEditState): List<LinkItemModel> {
-    if (state.latestLinks == null) return map {
-        LinkItemModel(
-            it,
-            false
-        )
-    }
-
-
-    return map { link ->
-        val isExpanded = state
-            .latestLinks
-            .find { it.link == link }
-            ?.isExpanded ?: false
-        LinkItemModel(
-            link,
-            isExpanded
-        )
     }
 }

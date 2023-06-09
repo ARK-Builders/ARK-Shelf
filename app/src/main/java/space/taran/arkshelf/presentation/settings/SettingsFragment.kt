@@ -9,9 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.launch
 import space.taran.arkfilepicker.ArkFilePickerConfig
-import space.taran.arkfilepicker.ArkFilePickerFragment
-import space.taran.arkfilepicker.ArkFilePickerMode
-import space.taran.arkfilepicker.onArkPathPicked
+import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerFragment
+import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerMode
+import space.taran.arkfilepicker.presentation.onArkPathPicked
 import space.taran.arkshelf.R
 import space.taran.arkshelf.databinding.FragmentSettingsBinding
 import space.taran.arkshelf.di.DIManager
@@ -42,7 +42,8 @@ class SettingsFragment: Fragment(R.layout.fragment_settings) {
         btnChangePath.setOnClickListener {
             val config = ArkFilePickerConfig(
                 mode = ArkFilePickerMode.FOLDER,
-                titleStringId = R.string.app_name,
+                titleStringId = R.string.pick_link_folder,
+                showRoots = true
             )
             ArkFilePickerFragment
                 .newInstance(config)

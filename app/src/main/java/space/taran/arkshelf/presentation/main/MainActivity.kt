@@ -2,8 +2,10 @@ package space.taran.arkshelf.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import by.kirich1409.viewbindingdelegate.viewBinding
+import space.taran.arklib.initRustLogger
 import space.taran.arkshelf.R
 import space.taran.arkshelf.databinding.ActivityMainBinding
 import space.taran.arkshelf.presentation.searchedit.SearchEditFragment
