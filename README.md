@@ -32,5 +32,5 @@ Even without an internet connection, you can save a link or transfer data to a c
 
 **ARK Shelf — a simple, yet powerful tool for saving and organizing your links. Download today and discover how we can simplify your life on the Internet.**
 
-<a href="https://www.ark-builders.dev/apps/shelf" target="_blank"><img src="https://github.com/ARK-Builders/ARK-Shelf/assets/581023/978df9c0-3de4-44ed-97f1-ae46631af49d" alt="Download APK" style="height: 60px !important;width: 217px !important;" ></a>
+<a href="https://www.ark-builders.dev/apps/shelf" target="_blank"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/581023/255703247-978df9c0-3de4-44ed-97f1-ae46631af49d.png" alt="Download APK" style="height: 60px !important;width: 217px !important;" ></a>
 <a href="https://www.buymeacoffee.com/arkbuilders" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
