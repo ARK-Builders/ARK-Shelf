@@ -6,6 +6,7 @@ import space.taran.arkshelf.domain.UserPreferences
 import java.nio.file.Path
 import javax.inject.Inject
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 
 class UserPreferencesImpl @Inject constructor(
     private val context: Context
@@ -13,7 +14,14 @@ class UserPreferencesImpl @Inject constructor(
     private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
     override fun getLinkFolder() =
-        prefs.getString(SAVE_PATH_KEY, null)?.let { Path(it) }
+        prefs.getString(SAVE_PATH_KEY, null)
+            ?.let {
+                val linkFolder = Path(it)
+                if (linkFolder.exists())
+                    linkFolder
+                else
+                    null
+            }
 
 
     override fun setLinkFolder(path: Path) = with(prefs.edit()) {
