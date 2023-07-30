@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: Development
-      env:
+    env:
         ACRA_LOGIN: ${{ secrets.ACRARIUM_BASIC_AUTH_LOGIN }}
         ACRA_PASS: ${{ secrets.ACRARIUM_BASIC_AUTH_PASSWORD }}
         ACRA_URI: ${{ secrets.ACRARIUM_URI }}
