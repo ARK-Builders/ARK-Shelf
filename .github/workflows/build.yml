@@ -2,14 +2,15 @@ name: Build the app
 
 on: [push]
 
+env:
+  ACRA_LOGIN: ${{ secrets.ACRARIUM_BASIC_AUTH_LOGIN }}
+  ACRA_PASS: ${{ secrets.ACRARIUM_BASIC_AUTH_PASSWORD }}
+  ACRA_URI: ${{ secrets.ACRARIUM_URI }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: Development
-    env:
-        ACRA_LOGIN: ${{ secrets.ACRARIUM_BASIC_AUTH_LOGIN }}
-        ACRA_PASS: ${{ secrets.ACRARIUM_BASIC_AUTH_PASSWORD }}
-        ACRA_URI: ${{ secrets.ACRARIUM_URI }}
     steps:
     - uses: actions/checkout@v3
 
