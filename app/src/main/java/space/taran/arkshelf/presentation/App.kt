@@ -39,7 +39,7 @@ class App : Application() {
         DIManager.init(this)
     }
 
-    private fun initAcra() = CoroutineScope(Dispatchers.IO).launch {
+    private fun initAcra() {
         initAcra {
             buildConfigClass = BuildConfig::class.java
             reportFormat = StringFormat.JSON

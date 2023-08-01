@@ -3,6 +3,7 @@ package space.taran.arkshelf.data
 import android.content.Context
 import android.os.Environment
 import space.taran.arkshelf.domain.UserPreferences
+import timber.log.Timber
 import java.nio.file.Path
 import javax.inject.Inject
 import kotlin.io.path.Path
@@ -17,10 +18,16 @@ class UserPreferencesImpl @Inject constructor(
         prefs.getString(SAVE_PATH_KEY, null)
             ?.let {
                 val linkFolder = Path(it)
-                if (linkFolder.exists())
-                    linkFolder
-                else
+                // Permission to access files may have been revoked
+                try {
+                    if (linkFolder.exists())
+                        linkFolder
+                    else
+                        null
+                } catch (e: Throwable) {
+                    Timber.e(e)
                     null
+                }
             }
 
 
