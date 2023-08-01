@@ -15,6 +15,12 @@ android {
         versionCode 1
         versionName "1.0"
         setProperty("archivesBaseName", "ark-shelf")
+        def login = System.getenv("ACRA_LOGIN") ?: ""
+        def password = System.getenv("ACRA_PASS") ?: ""
+        def uri = System.getenv("ACRA_URI") ?: ""
+        buildConfigField "String", "ACRA_LOGIN", "\"$login\""
+        buildConfigField "String", "ACRA_PASS", "\"$password\""
+        buildConfigField "String", "ACRA_URI", "\"$uri\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -89,6 +95,9 @@ dependencies {
 
     implementation "org.orbit-mvi:orbit-viewmodel:4.3.2"
     implementation "com.ericktijerou.koleton:koleton:1.0.0-beta01"
+
+    implementation "ch.acra:acra-http:5.9.3"
+    implementation "ch.acra:acra-dialog:5.9.3"
 
     implementation 'com.github.ARK-Builders:ark-filepicker:c6d66141c1'
 

@@ -17,6 +17,9 @@
     <string name="pick">Pick</string>
     <string name="pick_link_folder">Pick link folder</string>
     <string name="link_copied">Link copied</string>
+    <string name="crash_dialog_description">Sorry, the application crashed. Please send a report to the developers.</string>
+    <string name="crash_dialog_title">Crash</string>
+    <string name="crash_dialog_comment">You can add a comment here:</string>
     <plurals name="items">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
