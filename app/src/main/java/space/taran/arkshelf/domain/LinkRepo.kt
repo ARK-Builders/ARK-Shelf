@@ -1,4 +1,4 @@
-package space.taran.arkshelf.domain
+package dev.arkbuilders.arkshelf.domain
 
 import java.nio.file.Path
 

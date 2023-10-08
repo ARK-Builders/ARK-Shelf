@@ -1,4 +1,4 @@
-package space.taran.arkshelf.data.network
+package dev.arkbuilders.arkshelf.data.network
 
 interface NetworkStatus {
     fun isOnline(): Boolean

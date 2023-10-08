@@ -1,8 +1,8 @@
-package space.taran.arkshelf.data
+package dev.arkbuilders.arkshelf.data
 
 import android.content.Context
 import android.os.Environment
-import space.taran.arkshelf.domain.UserPreferences
+import dev.arkbuilders.arkshelf.domain.UserPreferences
 import java.nio.file.Path
 import javax.inject.Inject
 import kotlin.io.path.Path

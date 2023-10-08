@@ -1,10 +1,10 @@
-package space.taran.arkshelf.data
+package dev.arkbuilders.arkshelf.data
 
 import android.content.Context
 import android.graphics.Bitmap
 import com.bumptech.glide.Glide
-import space.taran.arklib.fetchLinkData
-import space.taran.arkshelf.domain.Link
+import dev.arkbuilders.arklib.fetchLinkData
+import dev.arkbuilders.arkshelf.domain.Link
 import java.nio.file.Path
 import javax.inject.Inject
 import kotlin.io.path.createTempFile

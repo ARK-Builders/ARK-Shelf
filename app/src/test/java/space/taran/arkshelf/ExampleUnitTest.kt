@@ -1,4 +1,4 @@
-package space.taran.arkshelf
+package dev.arkbuilders.arkshelf
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package space.taran.arkshelf.presentation
+package dev.arkbuilders.arkshelf.presentation
 
 import androidx.constraintlayout.motion.widget.MotionLayout
 

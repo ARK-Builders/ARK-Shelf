@@ -1,4 +1,4 @@
-package space.taran.arkshelf.presentation
+package dev.arkbuilders.arkshelf.presentation
 
 import android.Manifest
 import android.content.Intent
@@ -18,9 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import space.taran.arkshelf.BuildConfig
-import space.taran.arkshelf.R
-import space.taran.arkshelf.presentation.main.MainActivity
+import dev.arkbuilders.arkshelf.BuildConfig
+import dev.arkbuilders.arkshelf.R
+import dev.arkbuilders.arkshelf.presentation.main.MainActivity
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.DecimalFormat

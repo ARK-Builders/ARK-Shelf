@@ -1,15 +1,15 @@
-package space.taran.arkshelf.presentation.main
+package dev.arkbuilders.arkshelf.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import by.kirich1409.viewbindingdelegate.viewBinding
-import space.taran.arklib.initRustLogger
-import space.taran.arkshelf.R
-import space.taran.arkshelf.databinding.ActivityMainBinding
-import space.taran.arkshelf.presentation.searchedit.SearchEditFragment
-import space.taran.arkshelf.presentation.settings.SettingsFragment
+import dev.arkbuilders.arklib.initRustLogger
+import dev.arkbuilders.arkshelf.R
+import dev.arkbuilders.arkshelf.databinding.ActivityMainBinding
+import dev.arkbuilders.arkshelf.presentation.searchedit.SearchEditFragment
+import dev.arkbuilders.arkshelf.presentation.settings.SettingsFragment
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val binding by viewBinding(ActivityMainBinding::bind)

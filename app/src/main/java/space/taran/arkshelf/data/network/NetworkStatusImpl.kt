@@ -1,4 +1,4 @@
-package space.taran.arkshelf.data.network
+package dev.arkbuilders.arkshelf.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager

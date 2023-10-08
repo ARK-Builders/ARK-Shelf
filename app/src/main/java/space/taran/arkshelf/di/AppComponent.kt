@@ -1,12 +1,12 @@
-package space.taran.arkshelf.di
+package dev.arkbuilders.arkshelf.di
 
 import android.app.Application
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import space.taran.arkshelf.di.module.RepoModule
-import space.taran.arkshelf.presentation.searchedit.SearchEditFragment
-import space.taran.arkshelf.presentation.settings.SettingsFragment
+import dev.arkbuilders.arkshelf.di.module.RepoModule
+import dev.arkbuilders.arkshelf.presentation.searchedit.SearchEditFragment
+import dev.arkbuilders.arkshelf.presentation.settings.SettingsFragment
 import javax.inject.Singleton
 
 @Singleton

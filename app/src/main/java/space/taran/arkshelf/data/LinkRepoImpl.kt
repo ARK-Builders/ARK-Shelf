@@ -1,11 +1,11 @@
-package space.taran.arkshelf.data
+package dev.arkbuilders.arkshelf.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import space.taran.arkshelf.data.network.NetworkStatus
-import space.taran.arkshelf.domain.Link
-import space.taran.arkshelf.domain.LinkRepo
-import space.taran.arkshelf.domain.NoInternetException
+import dev.arkbuilders.arkshelf.data.network.NetworkStatus
+import dev.arkbuilders.arkshelf.domain.Link
+import dev.arkbuilders.arkshelf.domain.LinkRepo
+import dev.arkbuilders.arkshelf.domain.NoInternetException
 import java.nio.file.Path
 import javax.inject.Inject
 

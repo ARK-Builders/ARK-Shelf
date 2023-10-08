@@ -1,13 +1,13 @@
-package space.taran.arkshelf.presentation
+package dev.arkbuilders.arkshelf.presentation
 
 import android.app.Application
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import space.taran.arkfilepicker.folders.FoldersRepo
-import space.taran.arklib.initArkLib
-import space.taran.arklib.initRustLogger
-import space.taran.arkshelf.di.DIManager
+import dev.arkbuilders.arkfilepicker.folders.FoldersRepo
+import dev.arkbuilders.arklib.initArkLib
+import dev.arkbuilders.arklib.initRustLogger
+import dev.arkbuilders.arkshelf.di.DIManager
 import timber.log.Timber
 
 class App : Application() {

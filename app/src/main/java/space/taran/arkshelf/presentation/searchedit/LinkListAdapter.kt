@@ -1,4 +1,4 @@
-package space.taran.arkshelf.presentation.searchedit
+package dev.arkbuilders.arkshelf.presentation.searchedit
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -15,9 +15,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import kotlinx.coroutines.CoroutineScope
-import space.taran.arkshelf.R
-import space.taran.arkshelf.databinding.ItemLinkBinding
-import space.taran.arkshelf.domain.Link
+import dev.arkbuilders.arkshelf.R
+import dev.arkbuilders.arkshelf.databinding.ItemLinkBinding
+import dev.arkbuilders.arkshelf.domain.Link
 
 class LinkListAdapter(
     private val context: Context,

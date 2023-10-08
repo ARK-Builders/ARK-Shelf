@@ -1,4 +1,4 @@
-package space.taran.arkshelf.presentation.settings
+package dev.arkbuilders.arkshelf.presentation.settings
 
 import android.content.Context
 import android.os.Bundle
@@ -8,13 +8,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.launch
-import space.taran.arkfilepicker.ArkFilePickerConfig
-import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerFragment
-import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerMode
-import space.taran.arkfilepicker.presentation.onArkPathPicked
-import space.taran.arkshelf.R
-import space.taran.arkshelf.databinding.FragmentSettingsBinding
-import space.taran.arkshelf.di.DIManager
+import dev.arkbuilders.arkfilepicker.ArkFilePickerConfig
+import dev.arkbuilders.arkfilepicker.presentation.filepicker.ArkFilePickerFragment
+import dev.arkbuilders.arkfilepicker.presentation.filepicker.ArkFilePickerMode
+import dev.arkbuilders.arkfilepicker.presentation.onArkPathPicked
+import dev.arkbuilders.arkshelf.R
+import dev.arkbuilders.arkshelf.databinding.FragmentSettingsBinding
+import dev.arkbuilders.arkshelf.di.DIManager
 import javax.inject.Inject
 
 class SettingsFragment: Fragment(R.layout.fragment_settings) {

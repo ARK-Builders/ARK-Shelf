@@ -1,4 +1,4 @@
-package space.taran.arkshelf.presentation.searchedit
+package dev.arkbuilders.arkshelf.presentation.searchedit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,9 +14,9 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
-import space.taran.arkshelf.domain.Link
-import space.taran.arkshelf.domain.LinkRepo
-import space.taran.arkshelf.domain.UserPreferences
+import dev.arkbuilders.arkshelf.domain.Link
+import dev.arkbuilders.arkshelf.domain.LinkRepo
+import dev.arkbuilders.arkshelf.domain.UserPreferences
 import java.nio.file.Path
 
 data class SearchEditState(

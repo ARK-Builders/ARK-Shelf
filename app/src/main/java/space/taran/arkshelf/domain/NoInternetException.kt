@@ -1,3 +1,3 @@
-package space.taran.arkshelf.domain
+package dev.arkbuilders.arkshelf.domain
 
 class NoInternetException: Exception()

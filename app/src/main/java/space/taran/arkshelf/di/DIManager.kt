@@ -1,4 +1,4 @@
-package space.taran.arkshelf.di
+package dev.arkbuilders.arkshelf.di
 
 import android.app.Application
 

@@ -1,9 +1,9 @@
-package space.taran.arkshelf.presentation.settings
+package dev.arkbuilders.arkshelf.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.MutableStateFlow
-import space.taran.arkshelf.domain.UserPreferences
+import dev.arkbuilders.arkshelf.domain.UserPreferences
 import java.nio.file.Path
 import javax.inject.Inject
 

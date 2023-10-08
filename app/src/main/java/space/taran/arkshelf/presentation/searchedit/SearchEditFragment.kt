@@ -1,4 +1,4 @@
-package space.taran.arkshelf.presentation.searchedit
+package dev.arkbuilders.arkshelf.presentation.searchedit
 
 import android.content.Context
 import android.os.Bundle
@@ -22,18 +22,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.viewmodel.observe
-import space.taran.arkfilepicker.ArkFilePickerConfig
-import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerFragment
-import space.taran.arkfilepicker.presentation.filepicker.ArkFilePickerMode
-import space.taran.arkfilepicker.presentation.onArkPathPicked
-import space.taran.arkshelf.R
-import space.taran.arkshelf.databinding.FragmentSearchEditBinding
-import space.taran.arkshelf.di.DIManager
-import space.taran.arkshelf.domain.NoInternetException
-import space.taran.arkshelf.presentation.askWritePermissions
-import space.taran.arkshelf.presentation.hideKeyboard
-import space.taran.arkshelf.presentation.isWritePermGranted
-import space.taran.arkshelf.presentation.main.MainActivity
+import dev.arkbuilders.arkfilepicker.ArkFilePickerConfig
+import dev.arkbuilders.arkfilepicker.presentation.filepicker.ArkFilePickerFragment
+import dev.arkbuilders.arkfilepicker.presentation.filepicker.ArkFilePickerMode
+import dev.arkbuilders.arkfilepicker.presentation.onArkPathPicked
+import dev.arkbuilders.arkshelf.R
+import dev.arkbuilders.arkshelf.databinding.FragmentSearchEditBinding
+import dev.arkbuilders.arkshelf.di.DIManager
+import dev.arkbuilders.arkshelf.domain.NoInternetException
+import dev.arkbuilders.arkshelf.presentation.askWritePermissions
+import dev.arkbuilders.arkshelf.presentation.hideKeyboard
+import dev.arkbuilders.arkshelf.presentation.isWritePermGranted
+import dev.arkbuilders.arkshelf.presentation.main.MainActivity
 import java.net.UnknownHostException
 import javax.inject.Inject
 
