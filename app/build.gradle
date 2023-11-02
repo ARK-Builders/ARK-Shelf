@@ -9,7 +9,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "space.taran.arkshelf"
+        applicationId "dev.arkbuilders.arkshelf"
         minSdk 26
         targetSdk 32
         versionCode 1
@@ -67,7 +67,7 @@ android {
 }
 
 dependencies {
-    implementation "space.taran:arklib:0.1.0-SNAPSHOT-f81e34a657"
+    implementation "dev.arkbuilders:arklib:0.3.3"
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -90,7 +90,7 @@ dependencies {
     implementation "org.orbit-mvi:orbit-viewmodel:4.3.2"
     implementation "com.ericktijerou.koleton:koleton:1.0.0-beta01"
 
-    implementation 'com.github.ARK-Builders:ark-filepicker:c6d66141c1'
+    implementation 'dev.arkbuilders:arkfilepicker:0.1.1'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
