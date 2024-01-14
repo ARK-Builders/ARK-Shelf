@@ -1,3 +1,4 @@
+*.jks
 *.iml
 .idea
 .gradle
