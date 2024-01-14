@@ -5,6 +5,11 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: Development
+    env:
+        ACRA_LOGIN: ${{ secrets.ACRARIUM_BASIC_AUTH_LOGIN }}
+        ACRA_PASS: ${{ secrets.ACRARIUM_BASIC_AUTH_PASSWORD }}
+        ACRA_URI: ${{ secrets.ACRARIUM_URI }}
     steps:
     - uses: actions/checkout@v3
 
@@ -13,6 +18,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
+        cache: gradle
 
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@v1.0.5
